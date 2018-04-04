@@ -2,48 +2,38 @@ package activitystreamer.client;
 
 import org.json.JSONObject;
 
-public class FrontEnd {
+public interface FrontEnd {
 
-    private static FrontEnd frontEnd;
+    /*
+    Things that need to happen :
+        - setup (set input hostname & port to Settings, set input username and secret as well)
+        - connected (set hostname and port labels, change indicator to green)
+        - disconnected (set hostname and port labels, change indicator to red)
+        - loggedin (set username label, change indicator to green)
+        - loggedout (set username label, change indicator to red)
+        - appendLog
+        - appendActivity
+        - sendActivity
+     */
 
-    public static FrontEnd getInstance(){
-        if(frontEnd==null){
-            frontEnd = new FrontEnd();
-        }
-        return frontEnd;
-    }
 
-    FrontEnd(){
-        setup();
-    }
 
-    public void setup(){
+    public void setup();
 
-    }
+    public void connected(String hostname, int port);
 
-    public void appendLog(String message){
+    public void disconnected();
 
-    }
+    public void loggedIn();
 
-    public void appendActivities(JSONObject activity, boolean self){
-        String user = activity.optString("authenticated_user", "unknown");
+    public void loggedOut();
 
-        if(self){
-            // display different colour
-            user = "self";
-        }
-    }
+    public void appendLog(String message);
 
-    public void loggedIn(){
+    public void appendActivity(JSONObject activity, boolean self);
 
-    }
+    public void sendActivity(String message);
 
-    public void connected(String hostname, int port){
 
-    }
-
-    public void disconnected(){
-
-    }
 
 }

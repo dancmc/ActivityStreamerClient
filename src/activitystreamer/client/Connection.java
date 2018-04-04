@@ -18,7 +18,8 @@ public class Connection extends Thread {
     private BufferedReader inreader;
     private PrintWriter outwriter;
 
-    private boolean open;
+    private boolean loggedIn=false;
+    private boolean open=true;
     private boolean term;
 
 
@@ -28,6 +29,7 @@ public class Connection extends Thread {
         out = new DataOutputStream(socket.getOutputStream());
         inreader = new BufferedReader(new InputStreamReader(in));
         outwriter = new PrintWriter(out, true);
+        start();
     }
 
     /*
@@ -48,8 +50,10 @@ public class Connection extends Thread {
             log.info("closing connection " + Settings.socketAddress(socket));
             try {
                 term = true;
-                inreader.close();
+                in.close();
                 out.close();
+                //todo review this interrupt
+                interrupt();
             } catch (IOException e) {
                 // already closed?
                 log.error("received exception closing the connection " + Settings.socketAddress(socket) + ": " + e);
@@ -66,16 +70,18 @@ public class Connection extends Thread {
                 term = ClientControl.getInstance().processData(this, data) || term;
 
             }
+
             log.debug("connection closed to " + Settings.socketAddress(socket));
             in.close();
-            outwriter.close();
+//            outwriter.close();
         } catch (IOException e) {
             log.error("connection " + Settings.socketAddress(socket) + " closed with exception: " + e);
 
         } finally {
-            ClientControl.getInstance().connectionClosed();
+            loggedIn = false;
+            open = false;
+            ClientControl.getInstance().connectionClosed(socket);
         }
-        open = false;
     }
 
     public Socket getSocket() {
@@ -86,4 +92,11 @@ public class Connection extends Thread {
         return open;
     }
 
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 }
