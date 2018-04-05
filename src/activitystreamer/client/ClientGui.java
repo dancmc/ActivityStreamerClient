@@ -23,8 +23,9 @@ import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+
 /**
- * @author daniel
+ * Framework of this class generated using NetBeans GUI designer
  */
 public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     private static final Logger log = LogManager.getLogger();
@@ -32,21 +33,12 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     /**
      * Creates new form ClientGui
      */
-    public ClientGui() {
+    ClientGui() {
 
 //        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(ClientGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(ClientGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(ClientGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//
+//            javax.swing.UIManager.setLookAndFeel(new MaterialLookAndFeel());
+//
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
 //            java.util.logging.Logger.getLogger(ClientGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
@@ -57,18 +49,23 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         documentLogging = areaLogging.getStyledDocument();
         buttonLogin.setEnabled(false);
 
+        StyleConstants.setForeground(grayColor, Color.gray);
+        StyleConstants.setForeground(blueColor, Color.blue);
+        StyleConstants.setForeground(pinkColor, Color.PINK);
+        StyleConstants.setBold(pinkColor, true);
+
         scrollLogging.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
             @Override
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                // Check if user has done dragging the scroll bar
-                if (!e.getValueIsAdjusting()) {
+                // Check if user is done dragging the scroll bar
+//                if (!e.getValueIsAdjusting()) {
                     JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
                     int extent = scrollBar.getModel().getExtent();
                     int maximum = scrollBar.getModel().getMaximum();
                     scrollLoggingMaxed = extent + e.getValue() == maximum;
-                } else {
-                    scrollLoggingMaxed = false;
-                }
+//                } else {
+//                    scrollLoggingMaxed = false;
+//                }
 
             }
         });
@@ -76,15 +73,15 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         scrollMessages.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
             @Override
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                // Check if user has done dragging the scroll bar
-                if (!e.getValueIsAdjusting()) {
+                // Check if user is done dragging the scroll bar
+//                if (!e.getValueIsAdjusting()) {
                     JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
                     int extent = scrollBar.getModel().getExtent();
                     int maximum = scrollBar.getModel().getMaximum();
                     scrollMessageMaxed = extent + e.getValue() == maximum;
-                } else {
-                    scrollMessageMaxed = false;
-                }
+//                } else {
+//                    scrollMessageMaxed = false;
+//                }
 
             }
         });
@@ -96,6 +93,9 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             }
         });
     }
+
+
+    // ACTION CALLBACKS
 
     private void buttonDisconnectMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonDisconnectMouseReleased
         new SwingWorker<Void, Void>(){
@@ -181,11 +181,11 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         String message = areaMessageInput.getText();
 
         sendActivity(message);
-        // todo maybe flash warning
+
     }//GEN-LAST:event_buttonSendMouseReleased
 
     /*
-    Methods called from non-EDT threads
+    These methods can be called from either EDT or other threads, have to check
     Lambdas in J8 would help a lot here....
 
     Things that need to happen :
@@ -212,7 +212,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         }
     }
 
-    // called from external
     @Override
     public void setup() {
 
@@ -292,19 +291,28 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         executeOnEdt(new Runnable() {
             @Override
             public void run() {
+                SimpleAttributeSet keyWord = null;
                 try {
-                    documentLogging.insertString(documentLogging.getLength(), message + "\n", null);
+                    if(!logColorToggle) {
+                        keyWord = grayColor;
+                    }
+                    documentLogging.insertString(documentLogging.getLength(), message + "\n", keyWord);
+                    logColorToggle = !logColorToggle;
                 } catch (Exception e){
-                    log.error("error adding text to logging pane "+ e.getMessage());
+                    log.error("ERROR - error adding text to logging pane : "+ e.getMessage());
                 }
 
-                if (scrollLoggingMaxed) {
-                    areaLogging.setCaretPosition(areaLogging.getDocument().getLength());
-                }
+                // unfortunately this doesn't matter with textpane
+//                if (scrollLoggingMaxed) {
+//                    areaLogging.setCaretPosition(areaLogging.getDocument().getLength());
+//                }
             }
         });
     }
 
+    private void appendActivityString(String activity, boolean self) {
+        appendActivity(new JSONObject(activity), self);
+    }
 
     @Override
     public void appendActivity(final JSONObject activity, final boolean self) {
@@ -314,14 +322,14 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             public void run() {
                 String user = activity.optString("authenticated_user", "unauthenticated");
 
-                SimpleAttributeSet keyWord = null;
+                SimpleAttributeSet keyWord;
 
                 if (self) {
                     // ? display different colour
                     user = "self";
-                    keyWord = new SimpleAttributeSet();
-                    StyleConstants.setForeground(keyWord, Color.RED);
-                    StyleConstants.setBold(keyWord, true);
+                   keyWord = pinkColor;
+                } else {
+                    keyWord = blueColor;
                 }
 
 
@@ -329,12 +337,13 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                     documentMessages.insertString(documentMessages.getLength(), user + " : \n\n", keyWord);
                     documentMessages.insertString(documentMessages.getLength(), prettifyJson(activity) + "\n\n", null);
                 } catch (Exception e){
-                    log.error("error adding text to message pane "+ e.getMessage());
+                    log.error("ERROR - error adding text to message pane : "+ e.getMessage());
                 }
 
-                if (scrollMessageMaxed) {
-                    areaMessages.setCaretPosition(areaMessages.getDocument().getLength());
-                }
+                // unfortunately this doesn't matter with textpane
+//                if (scrollMessageMaxed) {
+//                    areaMessages.setCaretPosition(areaMessages.getDocument().getLength());
+//                }
             }
         });
     }
@@ -360,9 +369,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                 try {
                     activity = new JSONObject(message);
                 } catch (JSONException e) {
-                    String error = "tried to send activity message but failed to parse";
-                    log.error(error);
-                    appendLog(error);
+                    ClientControl.getInstance().outputError(log, "ERROR - tried to send activity message but failed to parse");
                     return false;
                 }
                 return ClientControl.getInstance().sendActivityObject(activity);
@@ -374,20 +381,21 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                     if (get()) {
                         areaMessageInput.setText("");
                         appendActivityString(message, true);
+                    } else {
+                        // todo maybe flash warning
                     }
                 } catch (Exception e){
-                    log.error("failed to display sent message");
+                    log.error("ERROR - failed to clear message input");
                 }
             }
         }.execute();
 
     }
 
-    // called from EDT, no background thread needed
-    private void appendActivityString(String activity, boolean self) {
-        appendActivity(new JSONObject(activity), self);
-    }
-
+    private SimpleAttributeSet pinkColor = new SimpleAttributeSet();
+    private SimpleAttributeSet blueColor = new SimpleAttributeSet();
+    private SimpleAttributeSet grayColor = new SimpleAttributeSet();
+    private boolean logColorToggle = true;
     private boolean scrollLoggingMaxed = true;
     private boolean scrollMessageMaxed = true;
     private StyledDocument documentMessages;
@@ -455,7 +463,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 800));
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(125, 208, 195));
         jPanel1.setMinimumSize(new java.awt.Dimension(1280, 153));
         jPanel1.setPreferredSize(new java.awt.Dimension(1280, 153));
 
@@ -463,19 +471,39 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         jPanel2.setOpaque(false);
         jPanel2.setPreferredSize(new java.awt.Dimension(640, 80));
 
+        staticConnected.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        staticConnected.setForeground(new java.awt.Color(255, 255, 255));
         staticConnected.setText("Connected");
 
+        labelHostname.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        labelHostname.setForeground(new java.awt.Color(255, 255, 255));
         labelHostname.setText("-");
 
+        labelPort.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        labelPort.setForeground(new java.awt.Color(255, 255, 255));
         labelPort.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelPort.setText("-");
 
+        staticHostname.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticHostname.setForeground(new java.awt.Color(255, 255, 255));
         staticHostname.setLabelFor(editHostname);
         staticHostname.setText("Hostname");
 
+        editHostname.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        editHostname.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+        editPort.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        editPort.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+        staticPort.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticPort.setForeground(new java.awt.Color(255, 255, 255));
         staticPort.setText("Port");
 
+        buttonReconnect.setBackground(new java.awt.Color(255, 255, 255));
+        buttonReconnect.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         buttonReconnect.setText("Reconnect");
+        buttonReconnect.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        buttonReconnect.setOpaque(true);
         buttonReconnect.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonReconnectMouseReleased(evt);
@@ -487,7 +515,11 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         indicatorConnected.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         indicatorConnected.setText("•");
 
+        buttonDisconnect.setBackground(new java.awt.Color(255, 255, 255));
+        buttonDisconnect.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         buttonDisconnect.setText("Disconnect");
+        buttonDisconnect.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        buttonDisconnect.setOpaque(true);
         buttonDisconnect.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonDisconnectMouseReleased(evt);
@@ -504,29 +536,30 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(staticConnected)
+                        .addComponent(buttonDisconnect)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(labelHostname, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(staticHostname)
-                    .addComponent(staticPort))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(editPort, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(staticConnected)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(labelHostname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(staticHostname)
+                            .addComponent(staticPort))
                         .addGap(18, 18, 18)
-                        .addComponent(buttonReconnect)))
-                .addGap(0, 118, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(buttonDisconnect)
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(editPort, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonReconnect)))
+                        .addGap(0, 116, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -543,32 +576,54 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                         .addComponent(labelHostname)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(labelPort))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(staticPort, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(editPort)
                         .addComponent(buttonReconnect)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonDisconnect)
-                .addGap(5, 5, 5))
+                .addGap(14, 14, 14)
+                .addComponent(buttonDisconnect))
         );
 
         jPanel3.setMinimumSize(new java.awt.Dimension(640, 100));
         jPanel3.setOpaque(false);
         jPanel3.setPreferredSize(new java.awt.Dimension(640, 114));
 
+        staticLoggedIn.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        staticLoggedIn.setForeground(new java.awt.Color(255, 255, 255));
         staticLoggedIn.setText("Logged in ");
 
+        labelUsername.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        labelUsername.setForeground(new java.awt.Color(255, 255, 255));
         labelUsername.setText("-");
 
+        buttonLogin.setBackground(new java.awt.Color(255, 255, 255));
+        buttonLogin.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         buttonLogin.setText("Login");
+        buttonLogin.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        buttonLogin.setOpaque(true);
         buttonLogin.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonLoginMouseReleased(evt);
             }
         });
 
+        editSecret.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        editSecret.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        editSecret.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editSecretActionPerformed(evt);
+            }
+        });
+
+        editUsername.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
+        editUsername.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+        staticSecret.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticSecret.setForeground(new java.awt.Color(255, 255, 255));
         staticSecret.setText("Secret");
 
+        staticUsername.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticUsername.setForeground(new java.awt.Color(255, 255, 255));
         staticUsername.setText("Username");
 
         indicatorLoggedIn.setFont(new java.awt.Font("Lucida Grande", 0, 20)); // NOI18N
@@ -576,14 +631,22 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         indicatorLoggedIn.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         indicatorLoggedIn.setText("•");
 
+        buttonRegister.setBackground(new java.awt.Color(255, 255, 255));
+        buttonRegister.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         buttonRegister.setText("Register");
+        buttonRegister.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        buttonRegister.setOpaque(true);
         buttonRegister.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonRegisterMouseReleased(evt);
             }
         });
 
+        buttonLogout.setBackground(new java.awt.Color(255, 255, 255));
+        buttonLogout.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
         buttonLogout.setText("Logout");
+        buttonLogout.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        buttonLogout.setOpaque(true);
         buttonLogout.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonLogoutMouseReleased(evt);
@@ -594,32 +657,29 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(staticLoggedIn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 199, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(staticUsername)
-                            .addComponent(staticSecret)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(buttonLogout)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(buttonLogout)
+                            .addComponent(staticLoggedIn))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(editUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
-                        .addComponent(editSecret))
+                    .addComponent(staticUsername)
+                    .addComponent(staticSecret))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(editUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                    .addComponent(editSecret)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(buttonRegister)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonLogin)))
                 .addGap(87, 87, 87))
         );
@@ -632,23 +692,27 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(editUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(staticUsername))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(15, 15, 15)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(editSecret, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(staticSecret))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(buttonLogin)
-                            .addComponent(buttonRegister))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(buttonLogout)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(buttonLogin)
+                                    .addComponent(buttonRegister))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(staticLoggedIn)
                             .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(labelUsername)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonLogout))))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -671,33 +735,47 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
+        jPanel4.setBackground(new java.awt.Color(38, 46, 65));
         jPanel4.setMinimumSize(new java.awt.Dimension(1280, 606));
         jPanel4.setPreferredSize(new java.awt.Dimension(1280, 606));
 
-        staticLogging.setText("Logging :");
+        staticLogging.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticLogging.setForeground(new java.awt.Color(255, 255, 255));
+        staticLogging.setText("Logging");
 
+        scrollLogging.setBorder(null);
         scrollLogging.setMinimumSize(new java.awt.Dimension(596, 537));
         scrollLogging.setPreferredSize(new java.awt.Dimension(596, 537));
 
         areaLogging.setEditable(false);
+        areaLogging.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        areaLogging.setFont(new java.awt.Font("Lucida Console", 0, 13)); // NOI18N
         scrollLogging.setViewportView(areaLogging);
 
-        staticMessages.setText("Messages :");
+        staticMessages.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        staticMessages.setForeground(new java.awt.Color(255, 255, 255));
+        staticMessages.setText("Messages");
 
+        scrollMessages.setBorder(null);
         scrollMessages.setMinimumSize(new java.awt.Dimension(585, 453));
         scrollMessages.setPreferredSize(new java.awt.Dimension(585, 453));
 
         areaMessages.setEditable(false);
+        areaMessages.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        areaMessages.setFont(new java.awt.Font("Lucida Console", 0, 13)); // NOI18N
         scrollMessages.setViewportView(areaMessages);
 
+        scrollMessageInput.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         scrollMessageInput.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         scrollMessageInput.setMinimumSize(new java.awt.Dimension(515, 77));
         scrollMessageInput.setPreferredSize(new java.awt.Dimension(515, 77));
 
         areaMessageInput.setColumns(20);
         areaMessageInput.setRows(5);
+        areaMessageInput.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         scrollMessageInput.setViewportView(areaMessageInput);
 
+        buttonSend.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         buttonSend.setText("Send");
         buttonSend.setMaximumSize(new java.awt.Dimension(100, 29));
         buttonSend.setMinimumSize(new java.awt.Dimension(88, 29));
@@ -709,14 +787,22 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             }
         });
 
+        buttonClearMessages.setBackground(new java.awt.Color(255, 255, 255));
+        buttonClearMessages.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         buttonClearMessages.setText("Clear");
+        buttonClearMessages.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 13, 5, 13));
+        buttonClearMessages.setOpaque(true);
         buttonClearMessages.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonClearMessagesMouseReleased(evt);
             }
         });
 
+        buttonClearLogs.setBackground(new java.awt.Color(255, 255, 255));
+        buttonClearLogs.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         buttonClearLogs.setText("Clear");
+        buttonClearLogs.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 13, 5, 13));
+        buttonClearLogs.setOpaque(true);
         buttonClearLogs.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonClearLogsMouseReleased(evt);
@@ -755,17 +841,15 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(staticLogging)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(24, 24, 24)
                         .addComponent(scrollLogging, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonClearLogs)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(buttonClearMessages)
-                                    .addComponent(staticMessages))
-                                .addGap(0, 0, 0)
-                                .addComponent(scrollMessages, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(buttonClearMessages)
+                            .addComponent(staticMessages))
+                        .addGap(16, 16, 16)
+                        .addComponent(scrollMessages, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -784,12 +868,16 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 661, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void editSecretActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSecretActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_editSecretActionPerformed
 
 
 

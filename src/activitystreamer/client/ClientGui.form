@@ -69,8 +69,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel4" pref="641" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <Component id="jPanel4" min="-2" pref="661" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -79,7 +79,7 @@
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="cc" type="rgb"/>
+          <Color blue="c3" green="d0" red="7d" type="rgb"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[1280, 153]"/>
@@ -133,38 +133,41 @@
                       <Component id="indicatorConnected" min="-2" pref="22" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="staticConnected" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="buttonDisconnect" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="labelPort" max="32767" attributes="0"/>
-                                  <Component id="labelHostname" pref="180" max="32767" attributes="0"/>
-                              </Group>
-                          </Group>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="staticHostname" min="-2" max="-2" attributes="0"/>
-                          <Component id="staticPort" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="editHostname" min="-2" pref="188" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Component id="editPort" min="-2" pref="58" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="staticConnected" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="labelPort" max="32767" attributes="0"/>
+                                          <Component id="labelHostname" pref="176" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="staticHostname" min="-2" max="-2" attributes="0"/>
+                                  <Component id="staticPort" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="buttonReconnect" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="editHostname" min="-2" pref="188" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="editPort" min="-2" pref="58" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="buttonReconnect" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="0" pref="116" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="0" pref="118" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                      <Component id="buttonDisconnect" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -185,15 +188,14 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="labelPort" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" groupAlignment="3" attributes="0">
+                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
                               <Component id="staticPort" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
                               <Component id="editPort" alignment="3" max="32767" attributes="0"/>
                               <Component id="buttonReconnect" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                       <Component id="buttonDisconnect" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -201,22 +203,46 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="staticConnected">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Connected"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="labelHostname">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="-"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="labelPort">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="horizontalAlignment" type="int" value="2"/>
                 <Property name="text" type="java.lang.String" value="-"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="staticHostname">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="editHostname"/>
                 </Property>
@@ -224,17 +250,55 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="editHostname">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="4" left="4" right="4" top="4"/>
+                  </Border>
+                </Property>
+              </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="editPort">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="4" left="4" right="4" top="4"/>
+                  </Border>
+                </Property>
+              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="staticPort">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Port"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="buttonReconnect">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Reconnect"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="5" left="15" right="15" top="5"/>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonReconnectMouseReleased"/>
@@ -254,7 +318,19 @@
             </Component>
             <Component class="javax.swing.JButton" name="buttonDisconnect">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Disconnect"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="5" left="15" right="15" top="5"/>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonDisconnectMouseReleased"/>
@@ -276,38 +352,34 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-                      <Component id="labelUsername" min="-2" pref="102" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                              <Component id="labelUsername" min="-2" pref="102" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="indicatorLoggedIn" min="-2" pref="22" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="staticLoggedIn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="199" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="staticUsername" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="staticSecret" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonLogout" min="-2" max="-2" attributes="0"/>
+                                  <Component id="staticLoggedIn" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                              <Component id="buttonLogout" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                          </Group>
                       </Group>
+                      <EmptySpace pref="125" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="editUsername" pref="188" max="32767" attributes="0"/>
-                              <Component id="editSecret" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Component id="staticUsername" min="-2" max="-2" attributes="0"/>
+                          <Component id="staticSecret" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="editUsername" pref="188" max="32767" attributes="0"/>
+                          <Component id="editSecret" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
                               <Component id="buttonRegister" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="buttonLogin" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -325,27 +397,34 @@
                                   <Component id="editUsername" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="staticUsername" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="editSecret" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="staticSecret" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="buttonLogin" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonRegister" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="buttonLogout" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="buttonLogin" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="buttonRegister" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="staticLoggedIn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="indicatorLoggedIn" alignment="3" min="-2" pref="16" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="labelUsername" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="buttonLogout" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -355,33 +434,92 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="staticLoggedIn">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Logged in "/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="labelUsername">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="-"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="buttonLogin">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Login"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="5" left="15" right="15" top="5"/>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonLoginMouseReleased"/>
               </Events>
             </Component>
             <Component class="javax.swing.JTextField" name="editSecret">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="4" left="4" right="4" top="4"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editSecretActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JTextField" name="editUsername">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="4" left="4" right="4" top="4"/>
+                  </Border>
+                </Property>
+              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="staticSecret">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Secret"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="staticUsername">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="14" style="0"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Username"/>
               </Properties>
             </Component>
@@ -399,7 +537,19 @@
             </Component>
             <Component class="javax.swing.JButton" name="buttonRegister">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Register"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="5" left="15" right="15" top="5"/>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonRegisterMouseReleased"/>
@@ -407,7 +557,19 @@
             </Component>
             <Component class="javax.swing.JButton" name="buttonLogout">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Century Gothic" size="13" style="0"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Logout"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="5" left="15" right="15" top="5"/>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonLogoutMouseReleased"/>
@@ -419,6 +581,9 @@
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel4">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="41" green="2e" red="26" type="rgb"/>
+        </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[1280, 606]"/>
         </Property>
@@ -465,21 +630,17 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="staticLogging" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="scrollLogging" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="buttonClearLogs" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="buttonClearMessages" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="staticMessages" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                                  <Component id="scrollMessages" min="-2" pref="505" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="buttonClearMessages" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="staticMessages" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                          <Component id="scrollMessages" min="-2" pref="505" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="buttonSend" min="-2" pref="77" max="-2" attributes="0"/>
@@ -495,11 +656,20 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="staticLogging">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Logging :"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Century Gothic" size="14" style="0"/>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logging"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="scrollLogging">
           <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[596, 537]"/>
             </Property>
@@ -513,17 +683,34 @@
             <Component class="javax.swing.JTextPane" name="areaLogging">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Lucida Console" size="13" style="0"/>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>
         </Container>
         <Component class="javax.swing.JLabel" name="staticMessages">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Messages :"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Century Gothic" size="14" style="0"/>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Messages"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="scrollMessages">
           <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[585, 453]"/>
             </Property>
@@ -537,12 +724,25 @@
             <Component class="javax.swing.JTextPane" name="areaMessages">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Lucida Console" size="13" style="0"/>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JScrollPane" name="scrollMessageInput">
           <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                <EmptyBorder/>
+              </Border>
+            </Property>
             <Property name="verticalScrollBarPolicy" type="int" value="21"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[515, 77]"/>
@@ -561,12 +761,20 @@
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="rows" type="int" value="5"/>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                    <EmptyBorder bottom="8" left="8" right="8" top="8"/>
+                  </Border>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>
         </Container>
         <Component class="javax.swing.JButton" name="buttonSend">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Century Gothic" size="14" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Send"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[100, 29]"/>
@@ -587,7 +795,19 @@
         </Component>
         <Component class="javax.swing.JButton" name="buttonClearMessages">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Century Gothic" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Clear"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                <EmptyBorder bottom="5" left="13" right="13" top="5"/>
+              </Border>
+            </Property>
+            <Property name="opaque" type="boolean" value="true"/>
           </Properties>
           <Events>
             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonClearMessagesMouseReleased"/>
@@ -595,7 +815,19 @@
         </Component>
         <Component class="javax.swing.JButton" name="buttonClearLogs">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Century Gothic" size="12" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Clear"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                <EmptyBorder bottom="5" left="13" right="13" top="5"/>
+              </Border>
+            </Property>
+            <Property name="opaque" type="boolean" value="true"/>
           </Properties>
           <Events>
             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonClearLogsMouseReleased"/>

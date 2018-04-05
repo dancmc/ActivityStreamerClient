@@ -13,9 +13,9 @@ public class Settings {
     private static SecureRandom random = new SecureRandom();
     private static String remoteHostname = null;
     private static int remotePort = 3780;
-    private static int activityInterval = 5000; // milliseconds
     private static String secret = null;
     private static String username = "anonymous";
+
 
     private static void help(Options options){
         String header = "An ActivityStream Client for Unimelb COMP90015\n\n";
@@ -24,7 +24,6 @@ public class Settings {
         formatter.printHelp("ActivityStreamer.Client", header, options, footer, true);
         System.exit(-1);
     }
-
 
 
     public static int getRemotePort() {
@@ -47,14 +46,6 @@ public class Settings {
         Settings.remoteHostname = remoteHostname;
     }
 
-    public static int getActivityInterval() {
-        return activityInterval;
-    }
-
-    public static void setActivityInterval(int activityInterval) {
-        Settings.activityInterval = activityInterval;
-    }
-
     public static String getSecret() {
         return secret;
     }
@@ -73,7 +64,7 @@ public class Settings {
 
 
     /*
-     * some general helper functions
+     * Some general helper functions
      */
 
     public static String socketAddress(Socket socket) {
@@ -88,9 +79,9 @@ public class Settings {
         log.info("reading command line options");
 
         Options options = new Options();
-        options.addOption("u",true,"username");
-        options.addOption("rp",true,"remote port number");
-        options.addOption("rh",true,"remote hostname");
+        options.addOption("rh",true,"remote hostname (default : loopback)");
+        options.addOption("rp",true,"remote port number (default : 3780)");
+        options.addOption("u",true,"username (default : anonymous)");
         options.addOption("s",true,"secret for username");
 
 

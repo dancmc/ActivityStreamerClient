@@ -7,12 +7,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.Socket;
 
-public class ClientControl extends Thread {
+public class ClientControl {
     private static final Logger log = LogManager.getLogger();
-    private static ClientControl clientSolution;
+    private static ClientControl clientSolution = new ClientControl();
     private boolean term;
     private boolean shouldLoginAfterRego;
     private ClientGui clientGui;
@@ -27,11 +28,16 @@ public class ClientControl extends Thread {
         return clientSolution;
     }
 
-    private ClientControl() {
-
+    public void start(){
         // GUI starts on the EDT
         clientGui = new ClientGui();
-        start();
+
+        reconnect(Settings.getRemoteHostname(), Settings.getRemotePort());
+        initialLogin();
+
+        if(!term) {
+            clientGui.setup();
+        }
     }
 
     // METHODS INVOKED BY UI
@@ -44,10 +50,10 @@ public class ClientControl extends Thread {
      */
     public boolean sendActivityObject(JSONObject activityObject) {
         boolean result = connection.writeMsg(JsonCreator.activityMessage(Settings.getUsername(), Settings.getSecret(), activityObject));
-        if(result){
-            outputInfo(log,"ACTION - sent activity object : " + activityObject);
+        if (result) {
+            outputInfo(log, "ACTION - sent activity object : " + activityObject);
         } else {
-            outputError(log,"ERROR - connection closed, could not send activity object");
+            outputError(log, "ERROR - connection closed, could not send activity object");
         }
         return result;
     }
@@ -57,7 +63,7 @@ public class ClientControl extends Thread {
      * Connect to given hostname and port. Disconnects any existing connection first.
      *
      * @param hostname hostname string, null defaults to loopback address
-     * @param port int between 0 and 65535
+     * @param port     int between 0 and 65535
      */
     public void reconnect(@Nullable String hostname, int port) {
         try {
@@ -79,7 +85,7 @@ public class ClientControl extends Thread {
             clientGui.connected(Settings.getRemoteHostname(), Settings.getRemotePort());
         } catch (IOException e) {
             outputError(log, "ERROR - failed connection to " + hostname + ":" + port + " : " + e.getMessage());
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             outputError(log, "ERROR - port number out of range (0-65535)");
         }
     }
@@ -87,10 +93,10 @@ public class ClientControl extends Thread {
     /**
      * Perform initial login
      * As per LMS :
-     *  - if the user the gives no username on the command line arguments then login as anonymous on start
-     *  - if the user gives a username and secret then login on start
-     *  - if the user gives only a username but no secret then first register the user, by generating a new secret
-     *    (print to screen for subsequent use), then login after/if receiving register success
+     * - if the user the gives no username on the command line arguments then login as anonymous on start
+     * - if the user gives a username and secret then login on start
+     * - if the user gives only a username but no secret then first register the user, by generating a new secret
+     * (print to screen for subsequent use), then login after/if receiving register success
      */
     private void initialLogin() {
 
@@ -118,8 +124,8 @@ public class ClientControl extends Thread {
     /**
      * Send login attempt, if username and secret both not null
      *
-     * @param username username as string
-     * @param secret secret as string
+     * @param username username as string, should not be null
+     * @param secret   secret as string, should not be null
      */
     public void login(String username, String secret) {
 
@@ -138,52 +144,78 @@ public class ClientControl extends Thread {
     }
 
     /**
-     * Send registration attempt if username and secret not null
+     * Send registration attempt if not anonymous, username and secret not null
      *
-     * @param username
-     * @param secret
+     * @param username username as string, should not be null
+     * @param secret   secret as string, should not be null
      */
     public void register(String username, String secret) {
         if ("anonymous".equalsIgnoreCase(username)) {
-            outputError("cannot register using anonymous");
+            outputError(log, "ERROR - cannot register using anonymous");
         } else if (username != null && secret != null) {
+            Settings.setUsername(username);
+            Settings.setSecret(secret);
+            outputInfo(log, "INFO - sending registration attempt");
             connection.writeMsg(JsonCreator.register(username, secret));
         } else {
-            outputError("invalid format for username or secret");
+            outputError(log, "ERROR - username or secret was null");
         }
     }
 
+    /**
+     * Sends logout message
+     */
     public void logout() {
-        connection.writeMsg(JsonCreator.logout());
-        outputInfo(Settings.getUsername() + " logging out");
+        boolean result = connection.writeMsg(JsonCreator.logout());
+        if(result){
+            outputInfo(log, "INFO - sent logout message");
+        } else {
+            outputInfo(log, "INFO - failed to send logout message");
+        }
+
+        connection.closeCon();
 
         if (!term) {
             clientGui.loggedOut();
         }
-
     }
 
+    /**
+     * Close connection to server and release associated resources
+     */
     public void disconnect() {
         connection.closeCon();
-        clientGui.disconnected();
+
+        if (!term) {
+            clientGui.disconnected();
+        }
     }
 
     // CONNECTION METHODS
 
+    /**
+     * Used by a closing connection to notify Control to cleanup
+     *
+     * @param socket reference to associated socket, for information
+     */
     public void connectionClosed(Socket socket) {
-        String info = "connection to " + Settings.socketAddress(socket) + " closed";
-        log.info(info);
 
-        if(!term) {
+        if (!term) {
             clientGui.disconnected();
-            clientGui.appendLog(info);
         }
     }
 
-
+    /**
+     * Called by a connection to process data strings received
+     *
+     * @param connection reference to connection calling this method
+     * @param data       data received by socket decoded to string
+     * @return true if connection should terminate, either based on data received, or if data cannot be parsed
+     * to valid JSON. false otherwise.
+     */
     public synchronized boolean processData(Connection connection, String data) {
 
-        log.debug("received : " + data);
+        log.debug("DEBUG - received : " + data);
 
         try {
             JSONObject json = new JSONObject(data);
@@ -193,15 +225,14 @@ public class ClientControl extends Thread {
 
                 case "INVALID_MESSAGE": {
                     String info = json.getString("info");
-                    String error = "INVALID_MESSAGE : " + info;
-                    return termConnection(null, error);
+                    return termConnection(null, "INVALID_MESSAGE : " + info);
                 }
 
                 case "AUTHENTICATION_FAIL": {
                     String info = json.getString("info");
                     disconnect();
                     return termConnection(null,
-                            "failed authentication to remote host " + Settings.getRemoteHostname() +
+                            "AUTHENTICATION_FAIL -  to remote host " + Settings.getRemoteHostname() +
                                     ":" + Settings.getRemotePort() +
                                     " using username " + Settings.getUsername() +
                                     " and secret " + Settings.getSecret() +
@@ -212,8 +243,10 @@ public class ClientControl extends Thread {
 
                     String info = json.getString("info");
                     connection.setLoggedIn(true);
-                    clientGui.loggedIn();
-                    outputInfo("LOGIN_SUCCESS : " + info);
+                    if (!term) {
+                        clientGui.loggedIn();
+                    }
+                    outputInfo(log, "LOGIN_SUCCESS - " + info);
                     break;
                 }
 
@@ -221,31 +254,34 @@ public class ClientControl extends Thread {
 
                     String hostname = json.getString("hostname");
                     int port = json.getInt("port");
-                    outputInfo("REDIRECT : " + hostname + ":" + port);
-
+                    outputInfo(log, "REDIRECT - " + hostname + ":" + port);
                     reconnect(hostname, port);
                     break;
                 }
 
                 case "LOGIN_FAILED": {
                     String info = json.getString("info");
-                    String error = "LOGIN_FAILED : " + info;
-                    return termConnection(null, error);
+                    return termConnection(null, "LOGIN_FAILED - " + info);
                 }
 
                 case "ACTIVITY_BROADCAST": {
                     JSONObject activity = json.getJSONObject("activity");
-                    String user = activity.getString("authenticated_user");
-                    outputInfo("ACTIVITY_BROADCAST : " + activity.toString());
 
-                    clientGui.appendActivity(activity, false);
+                    // *BUG* slightly ambiguous whether this check is implied in specification for client, only server
+                    // but it would be considered a required field
+                    String user = activity.getString("authenticated_user");
+                    outputInfo(log, "ACTIVITY_BROADCAST - " + activity.toString());
+
+                    if (!term) {
+                        clientGui.appendActivity(activity, false);
+                    }
                     break;
                 }
 
                 case "REGISTER_SUCCESS": {
 
                     String info = json.getString("info");
-                    outputInfo("REGISTER_SUCCESS : " + info);
+                    outputInfo(log, "REGISTER_SUCCESS - " + info);
 
                     if (shouldLoginAfterRego) {
                         shouldLoginAfterRego = false;
@@ -257,103 +293,112 @@ public class ClientControl extends Thread {
 
                 case "REGISTER_FAILED": {
                     String info = json.getString("info");
-                    String error = "LOGIN_FAILED : " + info;
 
                     if (shouldLoginAfterRego) {
                         shouldLoginAfterRego = false;
                     }
 
-                    return termConnection(null, error);
+                    return termConnection(null, "LOGIN_FAILED - " + info);
                 }
 
                 default: {
-                    String error = "Error : Unknown command";
-                    return termConnection(JsonCreator.invalidMessage(error), error);
+                    String error = "received message with unknown command";
+                    return termConnection(JsonCreator.invalidMessage(error), "ERROR - " + error);
                 }
 
             }
         } catch (JSONException e) {
             String error = "JSON parse exception : " + e.getMessage();
-            return termConnection(JsonCreator.invalidMessage(error), error);
+            return termConnection(JsonCreator.invalidMessage(error), "ERROR - " + error);
         }
 
 
         return false;
     }
 
+    // UTILITY METHODS
+
+    /**
+     * Utility method to reply to server and log error if connection should terminate based on data received
+     *
+     * @param messageToServer message to send to server if not null
+     * @param errorMessage    message to log, if not null
+     * @return true if connection should terminate, false otherwise
+     */
     private boolean termConnection(String messageToServer, String errorMessage) {
         if (messageToServer != null) {
             connection.writeMsg(messageToServer);
         }
 
-        String error = "connection " + Settings.socketAddress(connection.getSocket()) + " closed : " + errorMessage;
-        log.error(error);
-
-        clientGui.appendLog(error);
-
+        if (errorMessage != null) {
+            outputError(log, errorMessage);
+        }
         return true;
     }
 
-    // UTILITY METHODS
-
+    /**
+     * Set term if Control should terminate loop and shut down
+     *
+     * @param term true if Control should terminate
+     */
     public void setTerm(boolean term) {
         this.term = term;
     }
 
+    /**
+     * Utility method to log error to console and GUI (GUI only if not shutting down or will freeze)
+     * Cannot be made static as needs to access term instance variable
+     *
+     * @param logger logger to use, as may be called from other classes
+     * @param error  error string to use
+     */
     public void outputError(Logger logger, String error) {
         logger.error(error);
-        if(!term) {
+        if (!term) {
             clientGui.appendLog(error);
         }
     }
 
+    /**
+     * Utility method to log info to console and GUI (GUI only if not shutting down or will freeze)
+     * Cannot be made static as needs to access term instance variable
+     *
+     * @param logger logger to use, as may be called from other classes
+     * @param info   info string to use
+     */
     public void outputInfo(Logger logger, String info) {
         logger.info(info);
-
-        if(!term) {
+        if (!term) {
             clientGui.appendLog(info);
         }
     }
 
+    /**
+     * @return whether user currently logged in
+     */
     public boolean isLoggedIn() {
         return connection.isLoggedIn();
     }
 
+    /**
+     * @return whether connection to server is open
+     */
     public boolean isConnected() {
         return connection.isOpen();
     }
 
 
-    public void run() {
-
-        reconnect(Settings.getRemoteHostname(), Settings.getRemotePort());
-        initialLogin();
-
-        clientGui.setup();
-
-        while (!term) {
-            // do something with 5 second intervals in between
-            try {
-                Thread.sleep(Settings.getActivityInterval());
-            } catch (InterruptedException e) {
-                log.info("received an interrupt, system is shutting down");
-                break;
-            }
-        }
-
-        // this is needed in case any method choose to end the program purely through setting term on Control
-        // * no such method exists at the moment
-        System.exit(0);
-
-    }
-
-    public void exit(){
+    /**
+     * Called by shutdown hook after System.exit invoked
+     * Should be synchronous and therefore have enough time for connections to close
+     */
+    public void cleanup() {
+        log.info("INFO - cleaning up connection for shutdown");
         logout();
-        log.info("closing connection");
-        connection.closeCon();
 
+        // some extra grace time in case of asynchronous closing
         try {
-            Thread.sleep(100);
+            Thread.sleep(150);
         } catch (InterruptedException e) {
 
         }

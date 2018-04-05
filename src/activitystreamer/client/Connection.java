@@ -31,8 +31,10 @@ public class Connection extends Thread {
         start();
     }
 
-    /*
-     * returns true if the message was written, otherwise false
+    /**
+     * Utility method to write to socket out
+     * @param msg string to be written to socket out
+     * @return true if the message was written, otherwise false
      */
     public boolean writeMsg(String msg) {
         if (open) {
@@ -40,19 +42,23 @@ public class Connection extends Thread {
             outwriter.flush();
             return true;
         }
+        ClientControl.getInstance().outputError(log, "ERROR - socket closed, failed to write : "+msg);
         return false;
     }
 
+    /**
+     * Close the connection and cleanup streams
+     */
     public void closeCon() {
         if (open) {
-            log.info("closing connection " + Settings.socketAddress(socket));
+            ClientControl.getInstance().outputInfo(log, "INFO - closing connection " + Settings.socketAddress(socket));
             try {
                 term = true;
                 in.close();
                 out.close();
             } catch (IOException e) {
                 // already closed?
-                log.error("received exception closing the connection " + Settings.socketAddress(socket) + ": " + e);
+                ClientControl.getInstance().outputError(log, "ERROR - exception closing connection " + Settings.socketAddress(socket) + " : " + e);
             }
         }
     }
@@ -62,17 +68,17 @@ public class Connection extends Thread {
         try {
             String data;
             while (!term && (data = inreader.readLine()) != null) {
-
                 term = ClientControl.getInstance().processData(this, data) || term;
             }
             in.close();
             outwriter.close();
+            ClientControl.getInstance().outputInfo(log, "INFO - connection to " + Settings.socketAddress(socket) + " closed");
         } catch (IOException e) {
-            log.error("connection " + Settings.socketAddress(socket) + " closed with exception: " + e);
+            ClientControl.getInstance().outputError(log, "ERROR - connection to " + Settings.socketAddress(socket) + " closed with exception : " + e);
 
         } finally {
             if(loggedIn) {
-                ClientControl.getInstance().outputInfo(log, "ACTION - passive logout");
+                ClientControl.getInstance().outputInfo(log, "INFO - logged out (passive)");
                 loggedIn = false;
             }
             open = false;
@@ -80,18 +86,24 @@ public class Connection extends Thread {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
-
+    /**
+     * @return true if connection is open
+     */
     public boolean isOpen() {
         return open;
     }
 
+    /**
+     * @return true if user is logged in
+     */
     public boolean isLoggedIn() {
         return loggedIn;
     }
 
+    /**
+     * Set connection login status
+     * @param loggedIn true if connection status is logged in
+     */
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
