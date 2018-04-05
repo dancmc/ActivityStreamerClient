@@ -1,10 +1,9 @@
 package activitystreamer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import activitystreamer.client.ClientControl;
 import activitystreamer.util.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +16,8 @@ public class Client {
 
     public static void main(String[] args) {
 
+
+        // This is a somewhat
         String exeName = new java.io.File(Client.class.getProtectionDomain()
                 .getCodeSource()
                 .getLocation()
@@ -56,8 +57,15 @@ public class Client {
 
         Settings.parseArguments(args);
 
-        ClientControl c = ClientControl.getInstance();
+        final ClientControl c = ClientControl.getInstance();
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                c.setTerm(true);
+                c.interrupt();
+                c.exit();
+            }
+        });
 
     }
 

@@ -1,6 +1,5 @@
 package activitystreamer.client;
 
-import activitystreamer.Client;
 import activitystreamer.util.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +39,6 @@ public class Connection extends Thread {
             outwriter.println(msg);
             outwriter.flush();
             return true;
-
         }
         return false;
     }
@@ -52,8 +50,6 @@ public class Connection extends Thread {
                 term = true;
                 in.close();
                 out.close();
-                //todo review this interrupt
-                interrupt();
             } catch (IOException e) {
                 // already closed?
                 log.error("received exception closing the connection " + Settings.socketAddress(socket) + ": " + e);
@@ -68,17 +64,17 @@ public class Connection extends Thread {
             while (!term && (data = inreader.readLine()) != null) {
 
                 term = ClientControl.getInstance().processData(this, data) || term;
-
             }
-
-            log.debug("connection closed to " + Settings.socketAddress(socket));
             in.close();
-//            outwriter.close();
+            outwriter.close();
         } catch (IOException e) {
             log.error("connection " + Settings.socketAddress(socket) + " closed with exception: " + e);
 
         } finally {
-            loggedIn = false;
+            if(loggedIn) {
+                ClientControl.getInstance().outputInfo(log, "ACTION - passive logout");
+                loggedIn = false;
+            }
             open = false;
             ClientControl.getInstance().connectionClosed(socket);
         }

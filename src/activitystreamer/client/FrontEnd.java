@@ -17,23 +17,21 @@ public interface FrontEnd {
      */
 
 
+    void setup();
 
-    public void setup();
+    void connected(String hostname, int port);
 
-    public void connected(String hostname, int port);
+    void disconnected();
 
-    public void disconnected();
+    void loggedIn();
 
-    public void loggedIn();
+    void loggedOut();
 
-    public void loggedOut();
+    void appendLog(String message);
 
-    public void appendLog(String message);
+    void appendActivity(JSONObject activity, boolean self);
 
-    public void appendActivity(JSONObject activity, boolean self);
-
-    public void sendActivity(String message);
-
+    void sendActivity(String message);
 
 
 }
