@@ -20,6 +20,7 @@ public class Connection extends Thread {
     private boolean loggedIn=false;
     private boolean open=true;
     private boolean term;
+    private boolean manuallyClosed;
 
 
     Connection(Socket socket) throws IOException{
@@ -36,7 +37,7 @@ public class Connection extends Thread {
      * @param msg string to be written to socket out
      * @return true if the message was written, otherwise false
      */
-    public boolean writeMsg(String msg) {
+    public synchronized boolean writeMsg(String msg) {
         if (open) {
             outwriter.println(msg);
             outwriter.flush();
@@ -54,11 +55,17 @@ public class Connection extends Thread {
             ClientControl.getInstance().outputInfo(log, "INFO - closing connection " + Settings.socketAddress(socket));
             try {
                 term = true;
-                in.close();
-                out.close();
+                // open must be set to false synchronously, cannot rely on subsequent run loop asynchronously closing
+                open = false;
+                // this boolean is needed to prevent GUI race condition when manually disconnecting+creating new connection
+                manuallyClosed = true;
+                socket.close();
             } catch (IOException e) {
                 // already closed?
                 ClientControl.getInstance().outputError(log, "ERROR - exception closing connection " + Settings.socketAddress(socket) + " : " + e);
+            }finally {
+
+                ClientControl.getInstance().connectionClosed(socket);
             }
         }
     }
@@ -70,8 +77,7 @@ public class Connection extends Thread {
             while (!term && (data = inreader.readLine()) != null) {
                 term = ClientControl.getInstance().processData(this, data) || term;
             }
-            in.close();
-            outwriter.close();
+            socket.close();
             ClientControl.getInstance().outputInfo(log, "INFO - connection to " + Settings.socketAddress(socket) + " closed");
         } catch (IOException e) {
             ClientControl.getInstance().outputError(log, "ERROR - connection to " + Settings.socketAddress(socket) + " closed with exception : " + e);
@@ -82,7 +88,12 @@ public class Connection extends Thread {
                 loggedIn = false;
             }
             open = false;
-            ClientControl.getInstance().connectionClosed(socket);
+            // if not manually closed, need to indicate closure to GUI
+            if(!manuallyClosed) {
+                ClientControl.getInstance().connectionClosed(socket);
+            }
+
+            outwriter.close();
         }
     }
 

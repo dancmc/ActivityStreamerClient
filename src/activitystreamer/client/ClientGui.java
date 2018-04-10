@@ -130,16 +130,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     }//GEN-LAST:event_buttonReconnectMouseReleased
 
 
-    private void buttonLogoutMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonLogoutMouseReleased
-        new SwingWorker<Void, Void>(){
-            @Override
-            protected Void doInBackground() throws Exception {
-                ClientControl.getInstance().logout();
-                return null;
-            }
-        }.execute();
-    }//GEN-LAST:event_buttonLogoutMouseReleased
-
     private void buttonClearLogsMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonClearLogsMouseReleased
         areaLogging.setText("");
     }//GEN-LAST:event_buttonClearLogsMouseReleased
@@ -178,7 +168,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     }//GEN-LAST:event_buttonLoginMouseReleased
 
     private void buttonSendMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonSendMouseReleased
-        String message = areaMessageInput.getText();
+        String message = areaMessageInput.getText().trim().replaceAll("\r","").replaceAll("\n","").replaceAll("\t", "");
 
         sendActivity(message);
 
@@ -253,9 +243,11 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                     indicatorConnected.setForeground(Color.RED);
                     buttonLogin.setEnabled(false);
                 }
-                if (!ClientControl.getInstance().isLoggedIn()) {
+
+                // may ont need the check since this is run synchronously with the disconnect
+//                if (!ClientControl.getInstance().isLoggedIn()) {
                     loggedOut();
-                }
+//                }
             }
         });
 
@@ -437,7 +429,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         staticUsername = new javax.swing.JLabel();
         indicatorLoggedIn = new javax.swing.JLabel();
         buttonRegister = new javax.swing.JButton();
-        buttonLogout = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         staticLogging = new javax.swing.JLabel();
         scrollLogging = new javax.swing.JScrollPane();
@@ -642,17 +633,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             }
         });
 
-        buttonLogout.setBackground(new java.awt.Color(255, 255, 255));
-        buttonLogout.setFont(new java.awt.Font("Century Gothic", 0, 13)); // NOI18N
-        buttonLogout.setText("Logout");
-        buttonLogout.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        buttonLogout.setOpaque(true);
-        buttonLogout.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                buttonLogoutMouseReleased(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -666,9 +646,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                         .addContainerGap()
                         .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonLogout)
-                            .addComponent(staticLoggedIn))))
+                        .addComponent(staticLoggedIn)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(staticUsername)
@@ -697,15 +675,10 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                             .addComponent(editSecret, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(staticSecret))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(buttonLogout)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(buttonLogin)
-                                    .addComponent(buttonRegister))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(buttonLogin)
+                            .addComponent(buttonRegister))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(staticLoggedIn)
@@ -831,7 +804,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                         .addComponent(scrollMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addComponent(scrollMessages, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(scrollMessages, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(29, 29, 29))
         );
         jPanel4Layout.setVerticalGroup(
@@ -849,8 +822,8 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                             .addComponent(buttonClearMessages)
                             .addComponent(staticMessages))
                         .addGap(16, 16, 16)
-                        .addComponent(scrollMessages, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(scrollMessages, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(scrollMessageInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -868,8 +841,8 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 661, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE))
         );
 
         pack();
@@ -890,7 +863,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     private javax.swing.JButton buttonClearMessages;
     private javax.swing.JButton buttonDisconnect;
     private javax.swing.JButton buttonLogin;
-    private javax.swing.JButton buttonLogout;
     private javax.swing.JButton buttonReconnect;
     private javax.swing.JButton buttonRegister;
     private javax.swing.JButton buttonSend;

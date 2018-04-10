@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Set;
 
 public class ClientControl {
     private static final Logger log = LogManager.getLogger();
@@ -33,10 +34,28 @@ public class ClientControl {
         clientGui = new ClientGui();
 
         reconnect(Settings.getRemoteHostname(), Settings.getRemotePort());
-        initialLogin();
+        if(isConnected()) {
+            initialLogin();
+        }
 
         if(!term) {
             clientGui.setup();
+        }
+    }
+
+    /**
+     * Called by shutdown hook after System.exit invoked
+     * Should be synchronous and therefore have enough time for connections to close
+     */
+    public void cleanup() {
+        log.info("INFO - cleaning up connection for shutdown");
+        disconnect();
+
+        // some extra grace time in case of asynchronous closing
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+
         }
     }
 
@@ -74,6 +93,7 @@ public class ClientControl {
             }
 
             // make new socket connection
+            outputInfo(log, "INFO - connecting to " +hostname + ":" +port);
             Socket socket = new Socket(hostname, port);
             connection = new Connection(socket);
 
@@ -104,8 +124,9 @@ public class ClientControl {
         String username = Settings.getUsername();
         String secret = Settings.getSecret();
 
-        // if no -u given, default is anonymous
+        // if no -u was given, default is anonymous
         if ("anonymous".equalsIgnoreCase(username)) {
+            Settings.setSecret("");
             login("anonymous", "");
         } else if (secret != null) {
             // if -u and -s given
@@ -162,31 +183,29 @@ public class ClientControl {
         }
     }
 
-    /**
-     * Sends logout message
-     */
-    public void logout() {
-        boolean result = connection.writeMsg(JsonCreator.logout());
-        if(result){
-            outputInfo(log, "INFO - sent logout message");
-        } else {
-            outputInfo(log, "INFO - failed to send logout message");
-        }
-
-        connection.closeCon();
-
-        if (!term) {
-            clientGui.loggedOut();
-        }
-    }
 
     /**
      * Close connection to server and release associated resources
      */
     public void disconnect() {
-        connection.closeCon();
+
+        if(isLoggedIn()){
+            boolean result = connection.writeMsg(JsonCreator.logout());
+            if(result){
+                outputInfo(log, "INFO - sent logout message");
+            } else {
+                outputInfo(log, "INFO - failed to send logout message");
+            }
+
+            connection.setLoggedIn(false);
+        }
+
+        if(connection!=null) {
+            connection.closeCon();
+        }
 
         if (!term) {
+            clientGui.loggedOut();
             clientGui.disconnected();
         }
     }
@@ -256,12 +275,18 @@ public class ClientControl {
                     int port = json.getInt("port");
                     outputInfo(log, "REDIRECT - " + hostname + ":" + port);
                     reconnect(hostname, port);
+                    login(Settings.getUsername(), Settings.getSecret());
+
                     break;
                 }
 
                 case "LOGIN_FAILED": {
                     String info = json.getString("info");
-                    return termConnection(null, "LOGIN_FAILED - " + info);
+                    outputInfo(log, "LOGIN_FAILED - " + info);
+
+                    // Specification indicates that only server closes connection
+                    // return termConnection(null, "LOGIN_FAILED - " + info);
+                    break;
                 }
 
                 case "ACTIVITY_BROADCAST": {
@@ -297,8 +322,10 @@ public class ClientControl {
                     if (shouldLoginAfterRego) {
                         shouldLoginAfterRego = false;
                     }
-
-                    return termConnection(null, "LOGIN_FAILED - " + info);
+                    outputInfo(log, "LOGIN_FAILED - " + info);
+                    // Likewise, specification says only server actively closes connection
+//                    return termConnection(null, "LOGIN_FAILED - " + info);
+                    break;
                 }
 
                 default: {
@@ -377,32 +404,18 @@ public class ClientControl {
      * @return whether user currently logged in
      */
     public boolean isLoggedIn() {
-        return connection.isLoggedIn();
+        return connection!=null && connection.isLoggedIn();
     }
 
     /**
      * @return whether connection to server is open
      */
     public boolean isConnected() {
-        return connection.isOpen();
+        return connection!=null && connection.isOpen();
     }
 
 
-    /**
-     * Called by shutdown hook after System.exit invoked
-     * Should be synchronous and therefore have enough time for connections to close
-     */
-    public void cleanup() {
-        log.info("INFO - cleaning up connection for shutdown");
-        logout();
 
-        // some extra grace time in case of asynchronous closing
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException e) {
-
-        }
-    }
 
 
 }
