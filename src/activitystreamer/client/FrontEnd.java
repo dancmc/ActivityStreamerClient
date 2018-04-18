@@ -2,6 +2,9 @@ package activitystreamer.client;
 
 import org.json.JSONObject;
 
+/**
+ * Probably unnecessary in this small app
+ */
 public interface FrontEnd {
 
     /*
@@ -29,7 +32,7 @@ public interface FrontEnd {
 
     void appendLog(String message);
 
-    void appendActivity(JSONObject activity, boolean self);
+    void appendActivity(JSONObject activity);
 
     void sendActivity(String message);
 

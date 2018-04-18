@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Set;
 
 public class ClientControl {
     private static final Logger log = LogManager.getLogger();
@@ -29,16 +28,16 @@ public class ClientControl {
         return clientSolution;
     }
 
-    public void start(){
+    public void start() {
         // GUI starts on the EDT
         clientGui = new ClientGui();
 
         reconnect(Settings.getRemoteHostname(), Settings.getRemotePort());
-        if(isConnected()) {
+        if (isConnected()) {
             initialLogin();
         }
 
-        if(!term) {
+        if (!term) {
             clientGui.setup();
         }
     }
@@ -93,7 +92,7 @@ public class ClientControl {
             }
 
             // make new socket connection
-            outputInfo(log, "INFO - connecting to " +hostname + ":" +port);
+            outputInfo(log, "INFO - connecting to " + hostname + ":" + port);
             Socket socket = new Socket(hostname, port);
             connection = new Connection(socket);
 
@@ -125,7 +124,7 @@ public class ClientControl {
         String secret = Settings.getSecret();
 
         // if no -u was given, default is anonymous
-        if ("anonymous".equalsIgnoreCase(username)) {
+        if ("anonymous".equals(username)) {
             Settings.setSecret("");
             login("anonymous", "");
         } else if (secret != null) {
@@ -150,7 +149,7 @@ public class ClientControl {
      */
     public void login(String username, String secret) {
 
-        if ("anonymous".equalsIgnoreCase(username)) {
+        if ("anonymous".equals(username)) {
             Settings.setUsername(username);
             Settings.setSecret(secret);
             connection.writeMsg(JsonCreator.login(username, ""));
@@ -171,7 +170,7 @@ public class ClientControl {
      * @param secret   secret as string, should not be null
      */
     public void register(String username, String secret) {
-        if ("anonymous".equalsIgnoreCase(username)) {
+        if ("anonymous".equals(username)) {
             outputError(log, "ERROR - cannot register using anonymous");
         } else if (username != null && secret != null) {
             Settings.setUsername(username);
@@ -189,9 +188,9 @@ public class ClientControl {
      */
     public void disconnect() {
 
-        if(isLoggedIn()){
+        if (isLoggedIn()) {
             boolean result = connection.writeMsg(JsonCreator.logout());
-            if(result){
+            if (result) {
                 outputInfo(log, "INFO - sent logout message");
             } else {
                 outputInfo(log, "INFO - failed to send logout message");
@@ -200,7 +199,7 @@ public class ClientControl {
             connection.setLoggedIn(false);
         }
 
-        if(connection!=null) {
+        if (connection != null) {
             connection.closeCon();
         }
 
@@ -293,12 +292,12 @@ public class ClientControl {
                     JSONObject activity = json.getJSONObject("activity");
 
                     // *BUG* slightly ambiguous whether this check is implied in specification for client, only server
-                    // but it would be considered a required field
-                    String user = activity.getString("authenticated_user");
+                    // it should be considered a required field, but apparently isn't
+//                    String user = activity.getString("authenticated_user");
                     outputInfo(log, "ACTIVITY_BROADCAST - " + activity.toString());
 
                     if (!term) {
-                        clientGui.appendActivity(activity, false);
+                        clientGui.appendActivity(activity);
                     }
                     break;
                 }
@@ -404,18 +403,15 @@ public class ClientControl {
      * @return whether user currently logged in
      */
     public boolean isLoggedIn() {
-        return connection!=null && connection.isLoggedIn();
+        return connection != null && connection.isLoggedIn();
     }
 
     /**
      * @return whether connection to server is open
      */
     public boolean isConnected() {
-        return connection!=null && connection.isOpen();
+        return connection != null && connection.isOpen();
     }
-
-
-
 
 
 }

@@ -59,10 +59,10 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 // Check if user is done dragging the scroll bar
 //                if (!e.getValueIsAdjusting()) {
-                    JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
-                    int extent = scrollBar.getModel().getExtent();
-                    int maximum = scrollBar.getModel().getMaximum();
-                    scrollLoggingMaxed = extent + e.getValue() == maximum;
+                JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
+                int extent = scrollBar.getModel().getExtent();
+                int maximum = scrollBar.getModel().getMaximum();
+                scrollLoggingMaxed = extent + e.getValue() == maximum;
 //                } else {
 //                    scrollLoggingMaxed = false;
 //                }
@@ -75,10 +75,10 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             public void adjustmentValueChanged(AdjustmentEvent e) {
                 // Check if user is done dragging the scroll bar
 //                if (!e.getValueIsAdjusting()) {
-                    JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
-                    int extent = scrollBar.getModel().getExtent();
-                    int maximum = scrollBar.getModel().getMaximum();
-                    scrollMessageMaxed = extent + e.getValue() == maximum;
+                JScrollBar scrollBar = (JScrollBar) e.getAdjustable();
+                int extent = scrollBar.getModel().getExtent();
+                int maximum = scrollBar.getModel().getMaximum();
+                scrollMessageMaxed = extent + e.getValue() == maximum;
 //                } else {
 //                    scrollMessageMaxed = false;
 //                }
@@ -98,7 +98,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     // ACTION CALLBACKS
 
     private void buttonDisconnectMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonDisconnectMouseReleased
-        new SwingWorker<Void, Void>(){
+        new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 ClientControl.getInstance().disconnect();
@@ -111,7 +111,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         final String hostname = editHostname.getText();
         final String port = editPort.getText();
 
-        new SwingWorker<Void, Void>(){
+        new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
@@ -143,7 +143,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         final String username = editUsername.getText();
         final String secret = editSecret.getText();
 
-        new SwingWorker<Void, Void>(){
+        new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 ClientControl.getInstance().register(username, secret);
@@ -157,7 +157,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         final String username = editUsername.getText();
         final String secret = editSecret.getText();
 
-        new SwingWorker<Void, Void>(){
+        new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 ClientControl.getInstance().login(username, secret);
@@ -168,7 +168,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     }//GEN-LAST:event_buttonLoginMouseReleased
 
     private void buttonSendMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonSendMouseReleased
-        String message = areaMessageInput.getText().trim().replaceAll("\r","").replaceAll("\n","").replaceAll("\t", "");
+        String message = areaMessageInput.getText().trim().replaceAll("\r", "").replaceAll("\n", "").replaceAll("\t", "");
 
         sendActivity(message);
 
@@ -190,8 +190,8 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
      */
 
 
-    private void executeOnEdt(Runnable runnable){
-        if(SwingUtilities.isEventDispatchThread()){
+    private void executeOnEdt(Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) {
             runnable.run();
         } else {
             try {
@@ -246,7 +246,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
 
                 // may ont need the check since this is run synchronously with the disconnect
 //                if (!ClientControl.getInstance().isLoggedIn()) {
-                    loggedOut();
+                loggedOut();
 //                }
             }
         });
@@ -285,13 +285,13 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
             public void run() {
                 SimpleAttributeSet keyWord = null;
                 try {
-                    if(!logColorToggle) {
+                    if (!logColorToggle) {
                         keyWord = grayColor;
                     }
                     documentLogging.insertString(documentLogging.getLength(), message + "\n", keyWord);
                     logColorToggle = !logColorToggle;
-                } catch (Exception e){
-                    log.error("ERROR - error adding text to logging pane : "+ e.getMessage());
+                } catch (Exception e) {
+                    log.error("ERROR - error adding text to logging pane : " + e.getMessage());
                 }
 
                 // unfortunately this doesn't matter with textpane
@@ -302,37 +302,24 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         });
     }
 
-    private void appendActivityString(String activity, boolean self) {
-        appendActivity(new JSONObject(activity), self);
-    }
 
     @Override
-    public void appendActivity(final JSONObject activity, final boolean self) {
+    public void appendActivity(final JSONObject activity) {
 
         executeOnEdt(new Runnable() {
             @Override
             public void run() {
+                boolean hasUser = activity.has("authenticated_user");
                 String user = activity.optString("authenticated_user", "unauthenticated");
 
-                SimpleAttributeSet keyWord;
-
-                if (self) {
-                    // ? display different colour
-                    user = "self";
-                   keyWord = pinkColor;
-                } else {
-                    keyWord = blueColor;
-                }
-
-
                 try {
-                    documentMessages.insertString(documentMessages.getLength(), user + " : \n\n", keyWord);
+                    documentMessages.insertString(documentMessages.getLength(), user + " : \n\n", (!hasUser) ? pinkColor : blueColor);
                     documentMessages.insertString(documentMessages.getLength(), prettifyJson(activity) + "\n\n", null);
-                } catch (Exception e){
-                    log.error("ERROR - error adding text to message pane : "+ e.getMessage());
+                } catch (Exception e) {
+                    log.error("ERROR - error adding text to message pane : " + e.getMessage());
                 }
 
-                // unfortunately this doesn't matter with textpane
+                // unfortunately this doesn't work with textpane
 //                if (scrollMessageMaxed) {
 //                    areaMessages.setCaretPosition(areaMessages.getDocument().getLength());
 //                }
@@ -352,7 +339,7 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     @Override
     public void sendActivity(final String message) {
 
-        new SwingWorker<Boolean, Void>(){
+        new SwingWorker<Boolean, Void>() {
 
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -372,11 +359,10 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
                 try {
                     if (get()) {
                         areaMessageInput.setText("");
-                        appendActivityString(message, true);
                     } else {
                         // todo maybe flash warning
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     log.error("ERROR - failed to clear message input");
                 }
             }
@@ -520,59 +506,59 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(indicatorConnected, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonDisconnect)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(staticConnected)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(indicatorConnected, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(labelPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(labelHostname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(staticHostname)
-                            .addComponent(staticPort))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(editPort, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(buttonReconnect)))
-                        .addGap(0, 116, Short.MAX_VALUE))))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(buttonDisconnect)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(staticConnected)
+                                                                .addGap(0, 0, Short.MAX_VALUE))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addGap(21, 21, 21)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(labelPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(labelHostname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(staticHostname)
+                                                        .addComponent(staticPort))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(editPort, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(buttonReconnect)))
+                                                .addGap(0, 116, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(staticConnected)
-                    .addComponent(indicatorConnected, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(staticHostname)
-                    .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(labelHostname)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(labelPort))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(staticPort, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(editPort)
-                        .addComponent(buttonReconnect)))
-                .addGap(14, 14, 14)
-                .addComponent(buttonDisconnect))
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(staticConnected)
+                                        .addComponent(indicatorConnected, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(staticHostname)
+                                        .addComponent(editHostname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(2, 2, 2)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(labelHostname)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(labelPort))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(staticPort, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(editPort)
+                                                .addComponent(buttonReconnect)))
+                                .addGap(14, 14, 14)
+                                .addComponent(buttonDisconnect))
         );
 
         jPanel3.setMinimumSize(new java.awt.Dimension(640, 100));
@@ -636,76 +622,76 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(staticLoggedIn)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(staticUsername)
-                    .addComponent(staticSecret))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(editUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
-                    .addComponent(editSecret)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(buttonRegister)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonLogin)))
-                .addGap(87, 87, 87))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                                .addGap(52, 52, 52)
+                                                .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(staticLoggedIn)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(staticUsername)
+                                        .addComponent(staticSecret))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(editUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                                        .addComponent(editSecret)
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                                .addComponent(buttonRegister)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(buttonLogin)))
+                                .addGap(87, 87, 87))
         );
         jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(editUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(staticUsername))
-                        .addGap(15, 15, 15)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(editSecret, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(staticSecret))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(buttonLogin)
-                            .addComponent(buttonRegister))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(staticLoggedIn)
-                            .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(labelUsername)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(editUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(staticUsername))
+                                                .addGap(15, 15, 15)
+                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(editSecret, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(staticSecret))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(buttonLogin)
+                                                        .addComponent(buttonRegister))
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(staticLoggedIn)
+                                                        .addComponent(indicatorLoggedIn, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(labelUsername)
+                                                .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
-                .addContainerGap(23, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
+                                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(38, 46, 65));
@@ -785,64 +771,64 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(staticLogging)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonClearLogs))
-                    .addComponent(scrollLogging, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(49, 49, 49)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(staticMessages)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonClearMessages))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(scrollMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addComponent(scrollMessages, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(29, 29, 29))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(33, 33, 33)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(staticLogging)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(buttonClearLogs))
+                                        .addComponent(scrollLogging, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(49, 49, 49)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(staticMessages)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(buttonClearMessages))
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(scrollMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                        .addComponent(scrollMessages, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(29, 29, 29))
         );
         jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(staticLogging)
-                        .addGap(24, 24, 24)
-                        .addComponent(scrollLogging, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonClearLogs)
-                            .addComponent(buttonClearMessages)
-                            .addComponent(staticMessages))
-                        .addGap(16, 16, 16)
-                        .addComponent(scrollMessages, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(scrollMessageInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(20, 20, 20))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(staticLogging)
+                                                .addGap(24, 24, 24)
+                                                .addComponent(scrollLogging, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(buttonClearLogs)
+                                                        .addComponent(buttonClearMessages)
+                                                        .addComponent(staticMessages))
+                                                .addGap(16, 16, 16)
+                                                .addComponent(scrollMessages, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(scrollMessageInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE))
         );
 
         pack();
@@ -851,8 +837,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     private void editSecretActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSecretActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_editSecretActionPerformed
-
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
