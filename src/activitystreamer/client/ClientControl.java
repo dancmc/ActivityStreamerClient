@@ -15,7 +15,7 @@ public class ClientControl {
     private static final Logger log = LogManager.getLogger();
     private static ClientControl clientSolution = new ClientControl();
     private boolean term;
-    private boolean shouldLoginAfterRego;
+    private boolean shouldLoginAfterRego; // only applicable to initial rego
     private ClientGui clientGui;
 
     private Connection connection;
@@ -139,6 +139,7 @@ public class ClientControl {
             shouldLoginAfterRego = true;
             register(username, newSecret);
         }
+
     }
 
     /**
@@ -232,6 +233,7 @@ public class ClientControl {
      * to valid JSON. false otherwise.
      */
     public synchronized boolean processData(Connection connection, String data) {
+
 
         log.debug("DEBUG - received : " + data);
 

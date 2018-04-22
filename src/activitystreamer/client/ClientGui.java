@@ -25,8 +25,9 @@ import java.awt.event.AdjustmentListener;
 
 
 /**
- * Framework of this class generated using NetBeans GUI designer
+ * Skeleton of this class automatically generated using NetBeans GUI designer
  */
+
 public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     private static final Logger log = LogManager.getLogger();
 
@@ -328,7 +329,10 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     }
 
     private String prettifyJson(JSONObject obj) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .create();
         JsonParser jp = new JsonParser();
         JsonElement je = jp.parse(obj.toString());
         return gson.toJson(je);
@@ -835,7 +839,6 @@ public class ClientGui extends javax.swing.JFrame implements FrontEnd {
     }// </editor-fold>//GEN-END:initComponents
 
     private void editSecretActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSecretActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_editSecretActionPerformed
 
 
