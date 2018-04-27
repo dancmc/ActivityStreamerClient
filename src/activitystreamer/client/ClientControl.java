@@ -2,7 +2,6 @@ package activitystreamer.client;
 
 import activitystreamer.util.JsonCreator;
 import activitystreamer.util.Settings;
-import com.sun.istack.internal.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -83,7 +82,7 @@ public class ClientControl {
      * @param hostname hostname string, null defaults to loopback address
      * @param port     int between 0 and 65535
      */
-    public void reconnect(@Nullable String hostname, int port) {
+    public void reconnect(String hostname, int port) {
         try {
 
             // disconnect existing connection
