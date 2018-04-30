@@ -4,7 +4,7 @@
     <root id="archive" name="ActivityStreamerClient.jar">
       <element id="module-output" name="ActivityStreamerClient" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-cli-1.3.1/commons-cli-1.3.1-javadoc.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-cli-1.3.1/commons-cli-1.3.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-cli-1.3.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20180130.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson-2.2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json_simple-1.1.jar" path-in-jar="/" />
